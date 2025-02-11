@@ -8,7 +8,7 @@ import (
 
 var errInvalidAuthHeader = errors.New("invalid oauth header")
 
-func (s *server) authRequired(next http.Handler) http.Handler {
+func (s *server) authRequiredMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Add("Vary", "Authorization")
 

@@ -15,7 +15,7 @@ import (
 	"github.com/wDRxxx/avito-shop/internal/repository"
 	"github.com/wDRxxx/avito-shop/internal/repository/postgres"
 	"github.com/wDRxxx/avito-shop/internal/service"
-	"github.com/wDRxxx/avito-shop/internal/service/usersService"
+	serviceImpl "github.com/wDRxxx/avito-shop/internal/service/service"
 )
 
 type serviceProvider struct {
@@ -26,7 +26,7 @@ type serviceProvider struct {
 	repository repository.Repository
 	httpServer api.HTTPServer
 
-	usersService service.UsersService
+	service service.Service
 }
 
 func newServiceProvider() *serviceProvider {
@@ -79,12 +79,12 @@ func (s *serviceProvider) Repository(ctx context.Context) repository.Repository 
 	return s.repository
 }
 
-func (s *serviceProvider) UsersService(ctx context.Context) service.UsersService {
-	if s.usersService == nil {
-		s.usersService = usersService.NewUsersService(s.Repository(ctx), s.AuthConfig())
+func (s *serviceProvider) Service(ctx context.Context) service.Service {
+	if s.service == nil {
+		s.service = serviceImpl.NewService(s.Repository(ctx), s.AuthConfig())
 	}
 
-	return s.usersService
+	return s.service
 }
 
 func (s *serviceProvider) HTTPServer(ctx context.Context, wg *sync.WaitGroup) api.HTTPServer {
@@ -92,7 +92,7 @@ func (s *serviceProvider) HTTPServer(ctx context.Context, wg *sync.WaitGroup) ap
 		s.httpServer = httpServer.NewHTTPServer(
 			s.AuthConfig(),
 			s.HttpConfig(),
-			s.UsersService(ctx),
+			s.Service(ctx),
 		)
 	}
 

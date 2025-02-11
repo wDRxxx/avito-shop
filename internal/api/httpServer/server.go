@@ -17,18 +17,18 @@ type server struct {
 	authConfig *config.AuthConfig
 	httpConfig *config.HttpConfig
 
-	usersService service.UsersService
+	service service.Service
 }
 
 func NewHTTPServer(
 	authConfig *config.AuthConfig,
 	httpConfig *config.HttpConfig,
-	usersService service.UsersService,
+	service service.Service,
 ) api.HTTPServer {
 	s := &server{
-		authConfig:   authConfig,
-		httpConfig:   httpConfig,
-		usersService: usersService,
+		authConfig: authConfig,
+		httpConfig: httpConfig,
+		service:    service,
 	}
 
 	s.setRoutes()

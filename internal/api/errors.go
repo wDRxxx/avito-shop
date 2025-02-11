@@ -6,5 +6,4 @@ import (
 
 var (
 	ErrInternal = errors.New("internal error, please, try again later")
-	ErrNotFound = errors.New("not found")
 )

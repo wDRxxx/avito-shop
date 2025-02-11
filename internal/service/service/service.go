@@ -1,4 +1,4 @@
-package usersService
+package service
 
 import (
 	"context"
@@ -17,16 +17,16 @@ import (
 	"github.com/wDRxxx/avito-shop/internal/utils"
 )
 
-type usersServ struct {
+type serv struct {
 	repo       repository.Repository
 	authConfig *config.AuthConfig
 }
 
-func NewUsersService(
+func NewService(
 	repo repository.Repository,
 	authConfig *config.AuthConfig,
-) service.UsersService {
-	s := &usersServ{
+) service.Service {
+	s := &serv{
 		repo:       repo,
 		authConfig: authConfig,
 	}
@@ -34,7 +34,7 @@ func NewUsersService(
 	return s
 }
 
-func (s *usersServ) UserToken(ctx context.Context, username string, password string) (string, error) {
+func (s *serv) UserToken(ctx context.Context, username string, password string) (string, error) {
 	u, err := s.repo.User(ctx, username)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
@@ -68,4 +68,22 @@ func (s *usersServ) UserToken(ctx context.Context, username string, password str
 	}
 
 	return token, nil
+}
+
+func (s *serv) BuyItem(ctx context.Context, userID int, title string) error {
+	item, err := s.repo.Item(ctx, title)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return service.ErrItemNotFound
+		}
+
+		return err
+	}
+
+	err = s.repo.BuyItem(ctx, userID, item)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

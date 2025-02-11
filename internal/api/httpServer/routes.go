@@ -12,6 +12,12 @@ func (s *server) setRoutes() {
 
 	mux.Route("/api", func(mux chi.Router) {
 		mux.Post("/auth", s.AuthHandler)
+
+		mux.Group(func(mux chi.Router) {
+			mux.Use(s.authRequiredMiddleware)
+
+			mux.Get("/buy/{item}", s.BuyHandler)
+		})
 	})
 
 	s.mux = mux

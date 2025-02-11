@@ -13,3 +13,11 @@ func UserFromRepositoryToService(user *rm.User) *sm.User {
 		Balance:  user.Balance,
 	}
 }
+
+func ItemFromRepositoryToService(item *rm.Item) *sm.Item {
+	return &sm.Item{
+		ID:    item.ID,
+		Title: item.Title,
+		Price: item.Price,
+	}
+}

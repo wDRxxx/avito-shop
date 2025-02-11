@@ -17,7 +17,10 @@ type repo struct {
 }
 
 const (
-	usersTable = "users"
+	usersTable        = "users"
+	itemsTable        = "items"
+	transactionsTable = "transactions"
+	inventoryTable    = "inventory"
 )
 
 func NewPostgresRepo(db *pgxpool.Pool, timeout time.Duration) repository.Repository {
@@ -96,4 +99,93 @@ func (r *repo) InsertUser(ctx context.Context, username string, password string)
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}, nil
+}
+
+func (r *repo) Item(ctx context.Context, title string) (*rm.Item, error) {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+
+	builder := sq.Select(
+		"id",
+		"title",
+		"price",
+		"created_at",
+		"updated_at",
+	).From(itemsTable).
+		Where(sq.Eq{"title": title}).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err := builder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	row := r.db.QueryRow(ctx, sql, args...)
+	var item rm.Item
+	err = row.Scan(
+		&item.ID,
+		&item.Title,
+		&item.Price,
+		&item.CreatedAt,
+		&item.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &item, nil
+}
+
+func (r *repo) BuyItem(ctx context.Context, userID int, item *rm.Item) (err error) {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+			return
+		}
+
+		err = tx.Commit(ctx)
+	}()
+
+	updateBuilder := sq.Update(usersTable).
+		Set("balance", sq.Expr("balance - ?", item.Price)).
+		Where(sq.Eq{"id": userID}).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err := updateBuilder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	insertBuilder := sq.Insert(inventoryTable).
+		Columns("user_id", "item_id", "quantity").
+		Values(userID, item.ID, 1).
+		Suffix(`
+	       ON CONFLICT (user_id, item_id)
+	       DO UPDATE SET quantity = inventory.quantity + EXCLUDED.quantity
+	   `).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err = insertBuilder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
