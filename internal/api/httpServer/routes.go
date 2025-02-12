@@ -17,6 +17,7 @@ func (s *server) setRoutes() {
 			mux.Use(s.authRequiredMiddleware)
 
 			mux.Get("/buy/{item}", s.BuyHandler)
+			mux.Get("/sendCoin", s.SendCoinHandler)
 		})
 	})
 

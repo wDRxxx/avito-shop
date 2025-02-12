@@ -15,5 +15,5 @@ type AuthResponse struct {
 
 type SendCoinRequest struct {
 	ToUser string `json:"toUser"`
-	Amount string `json:"amount"`
+	Amount int    `json:"amount"`
 }

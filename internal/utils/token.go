@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -43,4 +44,18 @@ func VerifyToken(token string, secretKey string) (*models.UserClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func UserIDFromToken(token string, secretKey string) (int, error) {
+	claims, err := VerifyToken(token, secretKey)
+	if err != nil {
+		return 0, err
+	}
+
+	userID, err := strconv.Atoi(claims.Subject)
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }

@@ -2,10 +2,13 @@ package postgres
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pkg/errors"
 
 	"github.com/wDRxxx/avito-shop/internal/repository"
 	rm "github.com/wDRxxx/avito-shop/internal/repository/models"
@@ -62,6 +65,10 @@ func (r *repo) User(ctx context.Context, username string) (*rm.User, error) {
 		&user.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrNotFound
+		}
+
 		return nil, err
 	}
 
@@ -130,6 +137,10 @@ func (r *repo) Item(ctx context.Context, title string) (*rm.Item, error) {
 		&item.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, repository.ErrNotFound
+		}
+
 		return nil, err
 	}
 
@@ -155,6 +166,7 @@ func (r *repo) BuyItem(ctx context.Context, userID int, item *rm.Item) (err erro
 
 	updateBuilder := sq.Update(usersTable).
 		Set("balance", sq.Expr("balance - ?", item.Price)).
+		Set("updated_at", time.Now()).
 		Where(sq.Eq{"id": userID}).
 		PlaceholderFormat(sq.Dollar)
 
@@ -175,6 +187,77 @@ func (r *repo) BuyItem(ctx context.Context, userID int, item *rm.Item) (err erro
 	       ON CONFLICT (user_id, item_id)
 	       DO UPDATE SET quantity = inventory.quantity + EXCLUDED.quantity
 	   `).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err = insertBuilder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repo) SendCoin(ctx context.Context, toUserID int, fromUserID int, amount int) (err error) {
+	ctx, cancel := context.WithTimeout(ctx, r.timeout)
+	defer cancel()
+
+	tx, err := r.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+			return
+		}
+
+		err = tx.Commit(ctx)
+	}()
+
+	updateBuilder := sq.Update(usersTable).
+		Set("balance", sq.Expr("balance - ?", amount)).
+		Set("updated_at", time.Now()).
+		Where(sq.Eq{"id": fromUserID}).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err := updateBuilder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, sql, args...)
+	if err != nil {
+		if strings.Contains(err.Error(), "users_balance_check") {
+			return repository.ErrNegativeBalance
+		}
+
+		return err
+	}
+
+	updateBuilder = sq.Update(usersTable).
+		Set("balance", sq.Expr("balance + ?", amount)).
+		Set("updated_at", time.Now()).
+		Where(sq.Eq{"id": toUserID}).
+		PlaceholderFormat(sq.Dollar)
+
+	sql, args, err = updateBuilder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(ctx, sql, args...)
+	if err != nil {
+		return err
+	}
+
+	insertBuilder := sq.Insert(transactionsTable).
+		Columns("sender", "recipient", "amount").
+		Values(fromUserID, toUserID, amount).
 		PlaceholderFormat(sq.Dollar)
 
 	sql, args, err = insertBuilder.ToSql()
