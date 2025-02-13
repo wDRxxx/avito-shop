@@ -19,9 +19,9 @@ import (
 )
 
 type serviceProvider struct {
-	httpConfig     *config.HttpConfig
-	postgresConfig *config.PostgresConfig
-	authConfig     *config.AuthConfig
+	httpConfig     config.HttpConfig
+	postgresConfig config.PostgresConfig
+	authConfig     config.AuthConfig
 
 	repository repository.Repository
 	httpServer api.HTTPServer
@@ -33,7 +33,7 @@ func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
 }
 
-func (s *serviceProvider) HttpConfig() *config.HttpConfig {
+func (s *serviceProvider) HttpConfig() config.HttpConfig {
 	if s.httpConfig == nil {
 		s.httpConfig = config.NewHttpConfig()
 	}
@@ -41,14 +41,14 @@ func (s *serviceProvider) HttpConfig() *config.HttpConfig {
 	return s.httpConfig
 }
 
-func (s *serviceProvider) PostgresConfig() *config.PostgresConfig {
+func (s *serviceProvider) PostgresConfig() config.PostgresConfig {
 	if s.postgresConfig == nil {
 		s.postgresConfig = config.NewPostgresConfig()
 	}
 	return s.postgresConfig
 }
 
-func (s *serviceProvider) AuthConfig() *config.AuthConfig {
+func (s *serviceProvider) AuthConfig() config.AuthConfig {
 	if s.authConfig == nil {
 		s.authConfig = config.NewAuthConfig()
 	}

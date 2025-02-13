@@ -5,12 +5,20 @@ import (
 	"os"
 )
 
-type HttpConfig struct {
+type HttpConfig interface {
+	Address() string
+}
+
+type httpConfig struct {
 	host string
 	port string
 }
 
-func NewHttpConfig() *HttpConfig {
+func (c *httpConfig) Address() string {
+	return net.JoinHostPort(c.host, c.port)
+}
+
+func NewHttpConfig() HttpConfig {
 	host := os.Getenv("HTTP_HOST")
 	if host == "" {
 		panic("HTTP_HOST environment variable is empty")
@@ -21,12 +29,8 @@ func NewHttpConfig() *HttpConfig {
 		panic("HTTP_PORT environment variable is empty")
 	}
 
-	return &HttpConfig{
+	return &httpConfig{
 		host: host,
 		port: port,
 	}
-}
-
-func (c *HttpConfig) Address() string {
-	return net.JoinHostPort(c.host, c.port)
 }

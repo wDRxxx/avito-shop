@@ -6,7 +6,12 @@ import (
 	"time"
 )
 
-type PostgresConfig struct {
+type PostgresConfig interface {
+	Timeout() time.Duration
+	ConnectionString() string
+}
+
+type postgresConfig struct {
 	host     string
 	port     string
 	user     string
@@ -15,11 +20,22 @@ type PostgresConfig struct {
 	timeout  time.Duration
 }
 
-func (c *PostgresConfig) Timeout() time.Duration {
+func (c *postgresConfig) Timeout() time.Duration {
 	return c.timeout
 }
 
-func NewPostgresConfig() *PostgresConfig {
+func (c *postgresConfig) ConnectionString() string {
+	return fmt.Sprintf(
+		"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+		c.host,
+		c.port,
+		c.database,
+		c.user,
+		c.password,
+	)
+}
+
+func NewPostgresConfig() PostgresConfig {
 	host := os.Getenv("POSTGRES_HOST")
 	if host == "" {
 		panic("POSTGRES_HOST environment variable is empty")
@@ -55,23 +71,12 @@ func NewPostgresConfig() *PostgresConfig {
 		panic("POSTGRES_TIMEOUT must be an integer")
 	}
 
-	return &PostgresConfig{
+	return &postgresConfig{
 		host:     host,
 		port:     port,
 		user:     user,
 		password: password,
 		database: database,
-		timeout:  time.Duration(t) * time.Second,
+		timeout:  t * time.Second,
 	}
-}
-
-func (c *PostgresConfig) ConnectionString() string {
-	return fmt.Sprintf(
-		"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		c.host,
-		c.port,
-		c.database,
-		c.user,
-		c.password,
-	)
 }

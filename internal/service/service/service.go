@@ -8,12 +8,12 @@ import (
 
 type serv struct {
 	repo       repository.Repository
-	authConfig *config.AuthConfig
+	authConfig config.AuthConfig
 }
 
 func NewService(
 	repo repository.Repository,
-	authConfig *config.AuthConfig,
+	authConfig config.AuthConfig,
 ) service.Service {
 	s := &serv{
 		repo:       repo,

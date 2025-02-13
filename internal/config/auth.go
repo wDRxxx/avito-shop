@@ -7,20 +7,25 @@ import (
 	"github.com/wDRxxx/avito-shop/internal/utils"
 )
 
-type AuthConfig struct {
+type AuthConfig interface {
+	TokenSecret() string
+	TokenTTL() time.Duration
+}
+
+type authConfig struct {
 	tokenSecret string
 	tokenTTL    time.Duration
 }
 
-func (c *AuthConfig) TokenSecret() string {
+func (c *authConfig) TokenSecret() string {
 	return c.tokenSecret
 }
 
-func (c *AuthConfig) TokenTTL() time.Duration {
+func (c *authConfig) TokenTTL() time.Duration {
 	return c.tokenTTL
 }
 
-func NewAuthConfig() *AuthConfig {
+func NewAuthConfig() AuthConfig {
 	secret := os.Getenv("TOKEN_SECRET")
 	if secret == "" {
 		panic("TOKEN_SECRET environment variable is empty")
@@ -35,8 +40,15 @@ func NewAuthConfig() *AuthConfig {
 		panic("TOKEN_TTL environment variable is invalid")
 	}
 
-	return &AuthConfig{
+	return &authConfig{
 		tokenSecret: secret,
 		tokenTTL:    ttl,
+	}
+}
+
+func NewMockAuthConfig() AuthConfig {
+	return &authConfig{
+		tokenSecret: "mock",
+		tokenTTL:    1 * time.Minute,
 	}
 }

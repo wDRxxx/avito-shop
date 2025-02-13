@@ -14,15 +14,15 @@ import (
 type server struct {
 	mux http.Handler
 
-	authConfig *config.AuthConfig
-	httpConfig *config.HttpConfig
+	authConfig config.AuthConfig
+	httpConfig config.HttpConfig
 
 	service service.Service
 }
 
 func NewHTTPServer(
-	authConfig *config.AuthConfig,
-	httpConfig *config.HttpConfig,
+	authConfig config.AuthConfig,
+	httpConfig config.HttpConfig,
 	service service.Service,
 ) api.HTTPServer {
 	s := &server{
