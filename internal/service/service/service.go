@@ -34,7 +34,7 @@ func NewService(
 }
 
 func (s *serv) UserToken(ctx context.Context, username string, password string) (string, error) {
-	u, err := s.repo.User(ctx, username)
+	u, err := s.repo.UserByUsername(ctx, username)
 	if err != nil {
 		if !errors.Is(err, repository.ErrNotFound) {
 			return "", err
@@ -81,6 +81,10 @@ func (s *serv) BuyItem(ctx context.Context, userID int, title string) error {
 
 	err = s.repo.BuyItem(ctx, userID, item)
 	if err != nil {
+		if errors.Is(err, repository.ErrNegativeBalance) {
+			return service.ErrInsufficientBalance
+		}
+
 		return err
 	}
 
@@ -88,7 +92,7 @@ func (s *serv) BuyItem(ctx context.Context, userID int, title string) error {
 }
 
 func (s *serv) SendCoin(ctx context.Context, toUser string, fromUserID int, amount int) error {
-	user, err := s.repo.User(ctx, toUser)
+	user, err := s.repo.UserByUsername(ctx, toUser)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return service.ErrUserNotFound
@@ -110,4 +114,39 @@ func (s *serv) SendCoin(ctx context.Context, toUser string, fromUserID int, amou
 	}
 
 	return nil
+}
+
+func (s *serv) UserInfo(ctx context.Context, userID int) (*sm.UserInfo, error) {
+	user, err := s.repo.UserByID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, service.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	repoInventory, err := s.repo.UserInventory(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	inventoryItems := converter.InventoryFromRepositoryToService(repoInventory)
+
+	repoIncomingTransactions, err := s.repo.UserIncomingTransactions(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	incomingTransactions := converter.IncomingTransactionsFromRepositoryToService(repoIncomingTransactions)
+
+	repoOutgoingTransactions, err := s.repo.UserOutgoingTransactions(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	outgoingTransactions := converter.OutgoingTransactionsFromRepositoryToService(repoOutgoingTransactions)
+
+	return &sm.UserInfo{
+		Balance:              user.Balance,
+		InventoryItems:       inventoryItems,
+		IncomingTransactions: incomingTransactions,
+		OutgoingTransactions: outgoingTransactions,
+	}, nil
 }

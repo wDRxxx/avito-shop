@@ -18,6 +18,7 @@ func (s *server) setRoutes() {
 
 			mux.Get("/buy/{item}", s.BuyHandler)
 			mux.Get("/sendCoin", s.SendCoinHandler)
+			mux.Get("/info", s.UserInfoHandler)
 		})
 	})
 

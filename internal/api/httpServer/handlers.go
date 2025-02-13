@@ -12,6 +12,7 @@ import (
 
 	"github.com/wDRxxx/avito-shop/internal/api"
 	"github.com/wDRxxx/avito-shop/internal/models"
+	"github.com/wDRxxx/avito-shop/internal/models/converter"
 	"github.com/wDRxxx/avito-shop/internal/service"
 	"github.com/wDRxxx/avito-shop/internal/utils"
 )
@@ -78,7 +79,10 @@ func (s *server) BuyHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, service.ErrItemNotFound) {
 			utils.WriteJSONError(err, w, http.StatusBadRequest)
-
+			return
+		}
+		if errors.Is(err, service.ErrInsufficientBalance) {
+			utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
 
@@ -170,4 +174,33 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (s *server) UserInfoHandler(w http.ResponseWriter, r *http.Request) {
+	token := strings.Split(r.Header.Get("Authorization"), " ")[1]
+	userID, err := utils.UserIDFromToken(token, s.authConfig.TokenSecret())
+	if err != nil {
+		slog.Error(
+			"error verifying token",
+			slog.Any("error", err),
+			slog.String("token", r.Header.Get("Authorization")),
+		)
+
+		utils.WriteJSONError(api.ErrInternal, w)
+		return
+	}
+
+	info, err := s.service.UserInfo(r.Context(), userID)
+	if err != nil {
+		slog.Error(
+			"error getting user info",
+			slog.Any("error", err),
+			slog.Int("userID", userID),
+		)
+		utils.WriteJSONError(api.ErrInternal, w)
+		return
+	}
+
+	resp := converter.UserInfoFromServiceToApi(info)
+	utils.WriteJSON(&resp, w)
 }

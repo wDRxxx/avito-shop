@@ -16,9 +16,10 @@ type User struct {
 
 type Transaction struct {
 	ID          int
-	Type        bool
 	SenderID    int
+	Sender      User
 	RecipientID int
+	Recipient   User
 	Amount      int
 
 	CreatedAt time.Time
@@ -34,10 +35,11 @@ type Item struct {
 	UpdatedAt time.Time
 }
 
-type Inventory struct {
+type InventoryItem struct {
 	ID       int
 	UserID   int
 	ItemID   int
+	Item     Item
 	Quantity int
 
 	CreatedAt time.Time

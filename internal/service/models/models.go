@@ -30,9 +30,25 @@ type Transaction struct {
 	Amount      int
 }
 
-type Inventory struct {
+type InventoryItem struct {
 	ID       int
-	UserID   int
-	ItemID   int
+	Title    string
 	Quantity int
+}
+
+type IncomingTransaction struct {
+	SenderUsername string
+	Amount         int
+}
+
+type OutgoingTransaction struct {
+	RecipientUsername string
+	Amount            int
+}
+
+type UserInfo struct {
+	Balance              int
+	InventoryItems       []*InventoryItem
+	IncomingTransactions []*IncomingTransaction
+	OutgoingTransactions []*OutgoingTransaction
 }
