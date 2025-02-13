@@ -18,11 +18,12 @@ func (s *serv) SendCoin(ctx context.Context, toUser string, fromUserID int, amou
 		return err
 	}
 
+	if user.Balance < amount {
+		return service.ErrInsufficientBalance
+	}
+
 	err = s.repo.SendCoin(ctx, user.ID, fromUserID, amount)
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return service.ErrItemNotFound
-		}
 		if errors.Is(err, repository.ErrNegativeBalance) {
 			return service.ErrInsufficientBalance
 		}

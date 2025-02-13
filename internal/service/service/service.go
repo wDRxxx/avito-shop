@@ -22,3 +22,12 @@ func NewService(
 
 	return s
 }
+
+func NewMockService(repo repository.Repository, authConfig config.AuthConfig) service.Service {
+	s := &serv{
+		repo:       repo,
+		authConfig: authConfig,
+	}
+
+	return s
+}
