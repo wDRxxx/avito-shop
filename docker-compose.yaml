@@ -7,14 +7,18 @@ networks:
   shop:
 
 services:
-#  avito-shop-service:
-#    build: .
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#    volumes:
-#      - ./logs:/avito-shop/logs/
-#      - ./migrations:/avito-shop/source/migrations
+  avito-shop-service:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./logs:/avito-shop/logs/
+      - ./migrations:/avito-shop/source/migrations
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    networks:
+      - shop
 
   postgres:
     image: postgres:16.2-alpine

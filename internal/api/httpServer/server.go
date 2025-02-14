@@ -36,6 +36,22 @@ func NewHTTPServer(
 	return s
 }
 
+func newMockHTTPServer(
+	authConfig config.AuthConfig,
+	httpConfig config.HttpConfig,
+	service service.Service,
+) *server {
+	s := &server{
+		authConfig: authConfig,
+		httpConfig: httpConfig,
+		service:    service,
+	}
+
+	s.setRoutes()
+
+	return s
+}
+
 func (s *server) Handler() http.Handler {
 	return s.mux
 }

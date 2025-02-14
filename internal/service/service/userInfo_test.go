@@ -190,6 +190,8 @@ func TestUserInfo(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			repoMock := tt.repositoryMock(mc)
 			service := NewMockService(repoMock, config.NewMockAuthConfig())
 

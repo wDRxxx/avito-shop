@@ -34,3 +34,10 @@ func NewHttpConfig() HttpConfig {
 		port: port,
 	}
 }
+
+func NewMockHttpConfig() HttpConfig {
+	return &httpConfig{
+		host: "::",
+		port: "8080",
+	}
+}

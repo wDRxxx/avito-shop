@@ -11,6 +11,6 @@ FROM alpine:3.13
 WORKDIR /root/
 COPY --from=builder /avito-shop/source/bin/ .
 COPY --from=builder /avito-shop/source/migrations /migrations/
-COPY --from=builder /avito-shop/source/prod.env .
+COPY --from=builder /avito-shop/source/docker.env .
 
-CMD ["sh", "-c", "./migrator --env-path=prod.env --migrations-path=/migrations/ && ./avito-shop --env-path=prod.env --env-level=prod --logs-path=/avito-shop/logs"]
+CMD ["sh", "-c", "./migrator --env-path=docker.env --migrations-path=/migrations/ && ./avito-shop --env-path=docker.env --env-level=prod --logs-path=/avito-shop/logs"]

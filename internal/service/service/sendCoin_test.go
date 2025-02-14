@@ -117,7 +117,7 @@ func TestSendCoin(t *testing.T) {
 			},
 			repositoryMock: func(mc *minimock.Controller) repository.Repository {
 				mock := repoMocks.NewRepositoryMock(mc)
-				mock.UserByUsernameMock.Expect(ctx, recipientUsername).Return(nil, service.ErrUserNotFound)
+				mock.UserByUsernameMock.Expect(ctx, recipientUsername).Return(nil, repository.ErrNotFound)
 				return mock
 			},
 		},
@@ -156,6 +156,8 @@ func TestSendCoin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			repoMock := tt.repositoryMock(mc)
 			service := NewMockService(repoMock, config.NewMockAuthConfig())
 
