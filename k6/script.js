@@ -63,7 +63,6 @@ const buy = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + user.token
-          // 'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdml0by1zaG9wIiwic3ViIjoiMSIsImV4cCI6MTc0MjIyMzM0MSwiVXNlcm5hbWUiOiJ0ZXN0aW5nMSJ9.iXupyHetexlHlsxrpUxilEV_rz5bhh4elmYsjLVifbE"
         }
       }
   );
@@ -88,7 +87,6 @@ const sendCoin = () => {
       `${URL}/sendCoin`,
       JSON.stringify({
         toUser: sendToUser,
-        // toUser: "testing2",
         amount: 1,
       }),
       {
@@ -96,7 +94,6 @@ const sendCoin = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + user.token
-          // 'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdml0by1zaG9wIiwic3ViIjoiMSIsImV4cCI6MTc0MjIyMzM0MSwiVXNlcm5hbWUiOiJ0ZXN0aW5nMSJ9.iXupyHetexlHlsxrpUxilEV_rz5bhh4elmYsjLVifbE"
         }
       }
   );
@@ -120,7 +117,6 @@ const info = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + user.token
-          // 'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdml0by1zaG9wIiwic3ViIjoiMSIsImV4cCI6MTc0MjIyMzM0MSwiVXNlcm5hbWUiOiJ0ZXN0aW5nMSJ9.iXupyHetexlHlsxrpUxilEV_rz5bhh4elmYsjLVifbE"
         }
       }
   );
