@@ -42,25 +42,25 @@ func TAuth(t *testing.T) {
 				Password: tt.password,
 			}
 			r, err := json.Marshal(reqBody)
-			require.NoError(t, err, "error marshaling request body")
+			require.NoError(t, err)
 
 			req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(r))
-			require.NoError(t, err, "error creating request")
+			require.NoError(t, err)
 			req.Header.Set("Content-Type", "application/json")
 
 			res, err := client.Do(req)
-			require.NoError(t, err, "error executing request")
+			require.NoError(t, err)
 			defer res.Body.Close()
 
 			assert.Equal(t, tt.expectStatus, res.StatusCode)
 
 			var authResponse em.AuthResponse
 			err = utils.ReadJSON(res.Body, &authResponse)
-			require.NoError(t, err, "error reading response body")
-			assert.Empty(t, authResponse.Errors, "unexpected API error")
+			require.NoError(t, err)
+			assert.Empty(t, authResponse.Errors)
 
 			claims, err := utils.VerifyToken(authResponse.Token, os.Getenv("TOKEN_SECRET"))
-			require.NoError(t, err, "error verifying token")
+			require.NoError(t, err)
 			require.Equal(t, tt.username, claims.Username)
 
 			users = append(users, em.User{

@@ -66,7 +66,7 @@ func TestAuthHandler(t *testing.T) {
 			expectedError:  nil,
 		},
 		{
-			name: "wrong credentials case",
+			name: "wrong credentials error case",
 			args: args{
 				ctx:     ctx,
 				request: req,

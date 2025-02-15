@@ -51,7 +51,7 @@ func TInfo(t *testing.T) {
 				var errorResponse em.ErrorResponse
 				err = utils.ReadJSON(res.Body, &errorResponse)
 				require.NoError(t, err, "error reading response body")
-				assert.Empty(t, errorResponse.Errors, "unexpected API error")
+				t.Error(errorResponse.Errors)
 			}
 		})
 	}

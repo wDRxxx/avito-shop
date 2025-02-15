@@ -61,6 +61,10 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Amount <= 1 {
+		_ = utils.WriteJSONError(api.ErrWrongSendCoinAmount, w, http.StatusBadRequest)
+		return
+	}
 	if claims.Username == req.ToUser {
 		_ = utils.WriteJSONError(api.ErrSendToYourself, w, http.StatusBadRequest)
 		return

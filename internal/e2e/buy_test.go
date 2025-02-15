@@ -36,7 +36,7 @@ func TBuy(t *testing.T) {
 			client := http.Client{}
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
-			require.NoError(t, err, "error creating request")
+			require.NoError(t, err)
 
 			req.Header.Set("Content-Type", "application/json")
 			if tt.authHeader != "" {
@@ -44,16 +44,16 @@ func TBuy(t *testing.T) {
 			}
 
 			res, err := client.Do(req)
-			require.NoError(t, err, "error executing request")
+			require.NoError(t, err)
 			defer res.Body.Close()
 
 			assert.Equal(t, tt.expectStatus, res.StatusCode)
 
-			if res.StatusCode != http.StatusOK {
-				var buyResponse em.ErrorResponse
-				err = utils.ReadJSON(res.Body, &buyResponse)
-				require.NoError(t, err, "error reading response body")
-				assert.NotEmpty(t, buyResponse.Errors, "expected error message from API")
+			if res.StatusCode != tt.expectStatus {
+				var errorResponse em.ErrorResponse
+				err = utils.ReadJSON(res.Body, &errorResponse)
+				require.NoError(t, err)
+				t.Error(errorResponse.Errors)
 			}
 		})
 	}

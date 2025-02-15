@@ -109,7 +109,7 @@ func TestUserInfoHandler(t *testing.T) {
 			expectedBody:   expectedBody,
 		},
 		{
-			name: "invalid token case",
+			name: "invalid token error case",
 			args: args{
 				ctx:   ctx,
 				token: "Bearer invalidToken",

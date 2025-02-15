@@ -159,6 +159,23 @@ func TestSendCoinHandler(t *testing.T) {
 			expectedStatus: http.StatusBadRequest,
 			expectedError:  api.ErrInsufficientBalance,
 		},
+		{
+			name: "wrong set amount err case",
+			args: args{
+				ctx:   ctx,
+				token: "Bearer " + token,
+				request: &models.SendCoinRequest{
+					ToUser: toUser,
+					Amount: 0,
+				},
+			},
+			serviceMock: func(mc *minimock.Controller) service.Service {
+				mockService := mocks.NewServiceMock(mc)
+				return mockService
+			},
+			expectedStatus: http.StatusBadRequest,
+			expectedError:  api.ErrWrongSendCoinAmount,
+		},
 	}
 
 	for _, tt := range tests {

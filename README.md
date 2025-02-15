@@ -4,7 +4,9 @@
 make run
 ```
 
-# Запуск тестов
+# Тесты
+Покрытие тестами составляет 42%
+## Запуск тестов
 1. 
     ```shell
     make e2e-stand
@@ -13,9 +15,9 @@ make run
     ```shell
     make test-coverage
     ```
-# Результаты нагрузочного тетсирования
+## Результаты нагрузочного тетсирования
 Результаты напрямую зависят от количества вызовов auth ручки сервиса, поскольку хеширование и сравнение пароля занимает +-200ms.
-## При убранной задержке от хеширования
+### При убранной задержке от хеширования
 ```
 http_req_blocked...............: avg=157.73µs min=0s     med=0s      max=1.39ms   p(90)=557.72µs p(95)=729.64µs
 http_req_connecting............: avg=120.21µs min=0s     med=0s      max=998.9µs  p(90)=526.98µs p(95)=561.2µs
@@ -27,7 +29,7 @@ http_req_sending...............: avg=83.37µs  min=0s     med=0s      max=5.45ms
 http_req_tls_handshaking.......: avg=0s       min=0s     med=0s      max=0s       p(90)=0s       p(95)=0s
 http_req_waiting...............: avg=32.6ms   min=10.9ms med=20.42ms max=113.18ms p(90)=79.47ms  p(95)=84.82ms
 ```
-## Без авторизации
+### Без авторизации
 ```
 http_req_blocked...............: avg=18.62µs min=0s      med=0s     max=1.03ms   p(90)=0s      p(95)=0s
 http_req_connecting............: avg=15.86µs min=0s      med=0s     max=1ms      p(90)=0s      p(95)=0s
@@ -40,7 +42,7 @@ http_req_tls_handshaking.......: avg=0s      min=0s      med=0s     max=0s      
 http_req_waiting...............: avg=13.93ms min=1.85ms  med=7.45ms max=402.05ms p(90)=18.42ms p(95)=62.32ms
 ```
 
-## Как есть
+### Как есть
 ```
 http_req_blocked...............: avg=1.25ms  min=0s   med=0s    max=28.05ms  p(90)=1.9ms    p(95)=6.66ms
 http_req_connecting............: avg=1.2ms   min=0s   med=0s    max=28.05ms  p(90)=1.55ms   p(95)=6.66ms

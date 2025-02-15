@@ -29,7 +29,7 @@ func TestCloser(t *testing.T) {
 
 	go CloseAll()
 
-	wg.Wait()
+	Wait()
 
 	require.Len(t, cl.funcsStageOne, 0)
 	require.Len(t, cl.funcsStageTwo, 0)

@@ -76,7 +76,7 @@ func TestBuyHandler(t *testing.T) {
 			expectedError:  nil,
 		},
 		{
-			name: "item not found case",
+			name: "item not found error case",
 			args: args{
 				ctx:   ctx,
 				item:  itemTitle,
@@ -91,7 +91,7 @@ func TestBuyHandler(t *testing.T) {
 			expectedError:  api.ErrItemNotFound,
 		},
 		{
-			name: "insufficient balance case",
+			name: "insufficient balance error case",
 			args: args{
 				ctx:   ctx,
 				item:  itemTitle,
@@ -136,7 +136,7 @@ func TestBuyHandler(t *testing.T) {
 			expectedError:  api.ErrInternal,
 		},
 		{
-			name: "invalid token case",
+			name: "invalid token error case",
 			args: args{
 				ctx:   ctx,
 				token: "Bearer invalidToken",

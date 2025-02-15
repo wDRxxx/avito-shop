@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	ErrWrongSendCoinAmount = errors.New("amount to send should be >= 0")
 	ErrInternal            = errors.New("internal error, please, try again later")
 	ErrSendToYourself      = errors.New("you can't send coins to yourself")
 	ErrUnauthorized        = errors.New("unauthorized")
