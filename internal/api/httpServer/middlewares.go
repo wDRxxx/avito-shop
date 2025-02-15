@@ -13,7 +13,7 @@ func (s *server) authRequiredMiddleware(next http.Handler) http.Handler {
 
 		_, _, err := s.getAndVerifyHeaderToken(r)
 		if err != nil {
-			utils.WriteJSONError(api.ErrUnauthorized, w, http.StatusUnauthorized)
+			_ = utils.WriteJSONError(api.ErrUnauthorized, w, http.StatusUnauthorized)
 			return
 		}
 

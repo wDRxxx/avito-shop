@@ -29,7 +29,7 @@ func TestBuyItem(t *testing.T) {
 		title  = gofakeit.BeerName()
 
 		item = &rm.Item{
-			ID:    int(gofakeit.Uint()),
+			ID:    int(gofakeit.Uint8()),
 			Title: title,
 			Price: int(gofakeit.Uint8()),
 		}

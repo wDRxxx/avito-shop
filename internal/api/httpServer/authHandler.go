@@ -18,12 +18,12 @@ func (s *server) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	err := utils.ReadReqJSON(w, r, &req)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			utils.WriteJSONError(err, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
 
 		if strings.Contains(err.Error(), "json: unknown field") {
-			utils.WriteJSONError(err, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
 
@@ -31,14 +31,14 @@ func (s *server) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			"error reading request on /api/auth",
 			slog.Any("error", err),
 		)
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
 	token, err := s.service.UserToken(r.Context(), req.Username, req.Password)
 	if err != nil {
 		if errors.Is(err, service.ErrWrongCredentials) {
-			utils.WriteJSONError(api.ErrWrongCredentials, w, http.StatusUnauthorized)
+			_ = utils.WriteJSONError(api.ErrWrongCredentials, w, http.StatusUnauthorized)
 			return
 		}
 
@@ -47,11 +47,11 @@ func (s *server) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			slog.Any("error", err),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
-	utils.WriteJSON(&models.AuthResponse{
+	_ = utils.WriteJSON(&models.AuthResponse{
 		Token: token,
 	}, w)
 }

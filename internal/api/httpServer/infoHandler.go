@@ -20,7 +20,7 @@ func (s *server) UserInfoHandler(w http.ResponseWriter, r *http.Request) {
 			slog.String("token", r.Header.Get("Authorization")),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
@@ -31,10 +31,10 @@ func (s *server) UserInfoHandler(w http.ResponseWriter, r *http.Request) {
 			slog.Any("error", err),
 			slog.Int("userID", userID),
 		)
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
 	resp := converter.UserInfoFromServiceToApi(info)
-	utils.WriteJSON(&resp, w)
+	_ = utils.WriteJSON(&resp, w)
 }

@@ -27,18 +27,18 @@ func (s *server) BuyHandler(w http.ResponseWriter, r *http.Request) {
 			slog.String("token", r.Header.Get("Authorization")),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
 	err = s.service.BuyItem(r.Context(), userID, itemTitle)
 	if err != nil {
 		if errors.Is(err, service.ErrItemNotFound) {
-			utils.WriteJSONError(api.ErrItemNotFound, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(api.ErrItemNotFound, w, http.StatusBadRequest)
 			return
 		}
 		if errors.Is(err, service.ErrInsufficientBalance) {
-			utils.WriteJSONError(api.ErrInsufficientBalance, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(api.ErrInsufficientBalance, w, http.StatusBadRequest)
 			return
 		}
 
@@ -49,7 +49,7 @@ func (s *server) BuyHandler(w http.ResponseWriter, r *http.Request) {
 			slog.Int("userID", userID),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 

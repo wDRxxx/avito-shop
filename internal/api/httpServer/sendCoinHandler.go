@@ -25,7 +25,7 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 			slog.String("token", r.Header.Get("Authorization")),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
@@ -36,7 +36,7 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 			slog.Any("error", err),
 			slog.String("subject", claims.Subject),
 		)
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
@@ -44,12 +44,12 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 	err = utils.ReadReqJSON(w, r, &req)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			utils.WriteJSONError(err, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
 
 		if strings.Contains(err.Error(), "json: unknown field") {
-			utils.WriteJSONError(err, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
 
@@ -57,23 +57,23 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 			"error reading request on /api/auth",
 			slog.Any("error", err),
 		)
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 
 	if claims.Username == req.ToUser {
-		utils.WriteJSONError(api.ErrSendToYourself, w, http.StatusBadRequest)
+		_ = utils.WriteJSONError(api.ErrSendToYourself, w, http.StatusBadRequest)
 		return
 	}
 
 	err = s.service.SendCoin(r.Context(), req.ToUser, userID, req.Amount)
 	if err != nil {
 		if errors.Is(err, service.ErrInsufficientBalance) {
-			utils.WriteJSONError(api.ErrInsufficientBalance, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(api.ErrInsufficientBalance, w, http.StatusBadRequest)
 			return
 		}
 		if errors.Is(err, service.ErrUserNotFound) {
-			utils.WriteJSONError(api.ErrUserNotFound, w, http.StatusBadRequest)
+			_ = utils.WriteJSONError(api.ErrUserNotFound, w, http.StatusBadRequest)
 			return
 		}
 
@@ -85,7 +85,7 @@ func (s *server) SendCoinHandler(w http.ResponseWriter, r *http.Request) {
 			slog.Int("amount", req.Amount),
 		)
 
-		utils.WriteJSONError(api.ErrInternal, w)
+		_ = utils.WriteJSONError(api.ErrInternal, w)
 		return
 	}
 

@@ -114,6 +114,7 @@ func TestAuthHandler(t *testing.T) {
 			if w.Code != tt.expectedStatus {
 				var errorResp *models.ErrorResponse
 				err = utils.ReadJSON(w.Body, &errorResp)
+				require.NoError(t, err)
 				t.Error(errorResp.Errors)
 			}
 		})

@@ -199,7 +199,7 @@ func (r *repo) BuyItem(ctx context.Context, userID int, item *rm.Item) (err erro
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback(ctx)
+			_ = tx.Rollback(ctx)
 			return
 		}
 
@@ -258,7 +258,7 @@ func (r *repo) SendCoin(ctx context.Context, toUserID int, fromUserID int, amoun
 	}
 	defer func() {
 		if err != nil {
-			tx.Rollback(ctx)
+			_ = tx.Rollback(ctx)
 			return
 		}
 

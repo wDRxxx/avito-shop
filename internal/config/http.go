@@ -3,15 +3,22 @@ package config
 import (
 	"net"
 	"os"
+	"time"
 )
 
 type HttpConfig interface {
 	Address() string
+	ReadHeaderTimeout() time.Duration
 }
 
 type httpConfig struct {
-	host string
-	port string
+	host              string
+	port              string
+	readHeaderTimeout time.Duration
+}
+
+func (c *httpConfig) ReadHeaderTimeout() time.Duration {
+	return c.readHeaderTimeout
 }
 
 func (c *httpConfig) Address() string {
@@ -29,9 +36,20 @@ func NewHttpConfig() HttpConfig {
 		panic("HTTP_PORT environment variable is empty")
 	}
 
+	readHeaderTimeout := os.Getenv("HTTP_READ_HEADER_TIMEOUT")
+	if readHeaderTimeout == "" {
+		panic("HTTP_READ_HEADER_TIMEOUT environment variable is empty")
+	}
+
+	t, err := time.ParseDuration(readHeaderTimeout)
+	if err != nil {
+		panic("HTTP_READ_HEADER_TIMEOUT environment variable has wrong format")
+	}
+
 	return &httpConfig{
-		host: host,
-		port: port,
+		host:              host,
+		port:              port,
+		readHeaderTimeout: t,
 	}
 }
 

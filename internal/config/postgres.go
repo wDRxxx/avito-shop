@@ -68,7 +68,7 @@ func NewPostgresConfig() PostgresConfig {
 
 	t, err := time.ParseDuration(timeout)
 	if err != nil {
-		panic("POSTGRES_TIMEOUT must be an integer")
+		panic("POSTGRES_TIMEOUT environment variable has wrong format")
 	}
 
 	return &postgresConfig{

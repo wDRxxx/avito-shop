@@ -24,3 +24,6 @@ e2e-stand:
 	docker compose -f=./docker-compose-e2e.yaml --env-file=e2e.env up -d
 	go run ./cmd/migrator/main.go --env-path=e2e.env --migrations-path=migrations
 	go run ./cmd/api --env-path=e2e.env
+
+lint:
+	golangci-lint run ./...

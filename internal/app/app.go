@@ -46,8 +46,9 @@ func (a *App) initDeps(ctx context.Context) error {
 func (a *App) initHTTPServer(ctx context.Context) {
 	s := a.serviceProvider.HTTPServer(ctx, a.wg)
 	a.httpServer = &http.Server{
-		Addr:    a.serviceProvider.HttpConfig().Address(),
-		Handler: s.Handler(),
+		Addr:              a.serviceProvider.HttpConfig().Address(),
+		Handler:           s.Handler(),
+		ReadHeaderTimeout: a.serviceProvider.HttpConfig().ReadHeaderTimeout(),
 	}
 }
 
