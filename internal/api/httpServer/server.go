@@ -59,18 +59,18 @@ func (s *server) Handler() http.Handler {
 func (s *server) getAndVerifyHeaderToken(r *http.Request) (string, *sm.UserClaims, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
-		return "", nil, errInvalidAuthHeader
+		return "", nil, api.ErrUnauthorized
 	}
 
 	exploded := strings.Split(authHeader, " ")
 	if len(exploded) != 2 || exploded[0] != "Bearer" {
-		return "", nil, errInvalidAuthHeader
+		return "", nil, api.ErrUnauthorized
 	}
 
 	token := exploded[1]
 	claims, err := utils.VerifyToken(token, s.authConfig.TokenSecret())
 	if err != nil {
-		return "", nil, errInvalidAuthHeader
+		return "", nil, api.ErrUnauthorized
 	}
 
 	return token, claims, nil
