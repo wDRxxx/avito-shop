@@ -1,7 +1,7 @@
 # Запуск проекта
 
 ```shell
-docker compose up -d
+make run
 ```
 
 # Запуск тестов
