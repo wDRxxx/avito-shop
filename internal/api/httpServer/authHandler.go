@@ -22,7 +22,7 @@ func (s *server) AuthHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if strings.Contains(err.Error(), "json: unknown field") {
+		if strings.Contains(err.Error(), "json:") {
 			_ = utils.WriteJSONError(err, w, http.StatusBadRequest)
 			return
 		}
