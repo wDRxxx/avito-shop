@@ -7,6 +7,7 @@ import (
 	"sync"
 )
 
+var exitFunc = os.Exit
 var globalCloser *Closer
 
 // Add adds new function to globalCloser
@@ -89,7 +90,7 @@ func (c *Closer) CloseAll() {
 		c.runFuncs(funcs)
 		c.mu.Unlock()
 
-		os.Exit(0)
+		exitFunc(0)
 	})
 }
 
